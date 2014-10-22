@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/mikepugh/geofire-js.svg?branch=master)](https://travis-ci.org/mikepugh/geofire-js)
 [![Coverage Status](https://img.shields.io/coveralls/mikepugh/geofire-js.svg)](https://coveralls.io/r/mikepugh/geofire-js)
-[![Version](https://badge.fury.io/gh/mikepugh/geofire-js.svg)](http://badge.fury.io/gh/mikepugh/geofire-js)
+[![Version](https://badge.fury.io/gh/mikepugh%2Fgeofire-js.svg)](http://badge.fury.io/gh/mikepugh%2Fgeofire-js)
 
 ## GeoFire w/ Data On Index
 Note that this branch of GeoFire-JS is maintained separately from the official GeoFire-JS library, and exists to support
