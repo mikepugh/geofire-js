@@ -1,8 +1,23 @@
 # GeoFire for JavaScript — Realtime location queries with Firebase
 
-[![Build Status](https://travis-ci.org/firebase/geofire-js.svg?branch=master)](https://travis-ci.org/firebase/geofire-js)
-[![Coverage Status](https://img.shields.io/coveralls/firebase/geofire-js.svg?branch=master)](https://coveralls.io/r/firebase/geofire-js)
-[![Version](https://badge.fury.io/gh/firebase%2Fgeofire-js.svg)](http://badge.fury.io/gh/firebase%2Fgeofire-js)
+[![Build Status](https://travis-ci.org/mikepugh/geofire-js.svg?branch=master)](https://travis-ci.org/mikepugh/geofire-js)
+[![Coverage Status](https://img.shields.io/coveralls/mikepugh/geofire-js.svg?branch=master)](https://coveralls.io/r/mikepugh/geofire-js)
+[![Version](https://badge.fury.io/gh/mikepugh%2Fgeofire-js.svg)](http://badge.fury.io/gh/mikepugh%2Fgeofire-js)
+
+## GeoFire w/ Data On Index
+Note that this branch of GeoFire-JS is maintained separately from the official GeoFire-JS library, and exists to support
+storing data on the GeoFire index as means to improve performance.
+
+Do *not* store large amounts of data on the index as it will be accessed frequently during geospatial searches. Only store
+the minimum amount of data required to assist in displaying search results to your end users.
+
+###Example use case:
+####Restaurant search
+Your app provides a way for end users to find restaurants in their area. You may want to store the Restaurant name
+on the GeoFire index so that you can quickly display that information without having to do a secondary lookup
+to another path in your Firebase forge.
+
+## About this Library
 
 GeoFire is an open-source library that allows you to store and query a set of keys based on their
 geographic location. At its heart, GeoFire simply stores locations with string keys. Its main
