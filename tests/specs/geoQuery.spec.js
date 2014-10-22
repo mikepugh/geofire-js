@@ -671,6 +671,7 @@ describe("GeoQuery Tests:", function() {
       }).then(function() {
         cl.x("p3");
       }).catch(failTestOnCaughtError);
+
     });
 
     it("\"key_moved\" callback gets passed correct data parameter", function(done) {
@@ -887,6 +888,7 @@ describe("GeoQuery Tests:", function() {
       }).then(function() {
         cl.x("p2");
       }).catch(failTestOnCaughtError);
+
     });
 
     it("\"key_entered\" callback gets passed correct data parameter", function(done) {
@@ -911,6 +913,7 @@ describe("GeoQuery Tests:", function() {
       }).then(function() {
         cl.x("p2");
       }).catch(failTestOnCaughtError);
+
     });
 
     it("\"key_entered\" callback properly fires when multiple keys are at the same location outside the GeoQuery and only one of them moves within the GeoQuery", function(done) {

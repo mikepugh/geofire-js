@@ -51,7 +51,7 @@ describe("GeoCallbackRegistration Tests:", function() {
         return wait(100);
       }).then(function() {
         cl.x("p5");
-      }).catch(failTestOnCaughtError);
+      }).catch(failTestOnCaughtError);;
     });
 
     it("\"key_entered\" registrations can be cancelled", function(done) {

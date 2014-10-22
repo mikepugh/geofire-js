@@ -22,7 +22,7 @@ var GeoFire = (function() {
  *
  * @constructor
  * @this {GeoCallbackRegistration}
- * @param {function} cancelCallback Callback to run when this callback registration is cancelled.
+ * @callback cancelCallback Callback to run when this callback registration is cancelled.
  */
 var GeoCallbackRegistration = function(cancelCallback) {
   /********************/
@@ -74,9 +74,9 @@ var GeoFire = function(firebaseRef) {
    * If the provided key already exists in this GeoFire, it will be overwritten with the new location value.
    *
    * @param {string} key The key representing the location to add.
-   * @param {array} location The [latitude, longitude] pair to add.
+   * @param {Array.<number>} location The [latitude, longitude] pair to add.
    * @param {object} data The optional data to store in the GeoFire index (keep this small).
-   * @return {RSVP.Promise} A promise that is fulfilled when the write is complete.
+   * @return {Promise<>} A promise that is fulfilled when the write is complete.
    */
   this.set = function(key, location, data) {
     validateKey(key);
@@ -108,7 +108,7 @@ var GeoFire = function(firebaseRef) {
    * If the provided key does not exist, the returned promise is fulfilled with null.
    *
    * @param {string} key The key of the location to retrieve.
-   * @return {RSVP.Promise} A promise that is fulfilled with the location of the given key.
+   * @return {Promise.<Array.<number>>} A promise that is fulfilled with the location of the given key.
    */
   this.get = function(key) {
     validateKey(key);
@@ -156,7 +156,7 @@ var GeoFire = function(firebaseRef) {
    * If the provided key is not in this GeoFire, the promise will still successfully resolve.
    *
    * @param {string} key The key of the location to remove.
-   * @return {RSVP.Promise} A promise that is fulfilled after the inputted key is removed.
+   * @return {Promise.<string>} A promise that is fulfilled after the inputted key is removed.
    */
   this.remove = function(key) {
     return this.set(key, null);
@@ -165,7 +165,7 @@ var GeoFire = function(firebaseRef) {
   /**
    * Returns a new GeoQuery instance with the provided queryCriteria.
    *
-   * @param {object} queryCriteria The criteria which specifies the GeoQuery's center and radius.
+   * @param {Object} queryCriteria The criteria which specifies the GeoQuery's center and radius.
    * @return {GeoQuery} A new GeoQuery object.
    */
   this.query = function(queryCriteria) {
@@ -187,8 +187,8 @@ var GeoFire = function(firebaseRef) {
  * via the Haversine formula. Note that this is approximate due to the fact that the
  * Earth's radius varies between 6356.752 km and 6378.137 km.
  *
- * @param {array} location1 The [latitude, longitude] pair of the first location.
- * @param {array} location2 The [latitude, longitude] pair of the second location.
+ * @param {Array.<number>} location1 The [latitude, longitude] pair of the first location.
+ * @param {Array.<number>} location2 The [latitude, longitude] pair of the second location.
  * @return {number} The distance, in kilometers, between the inputted locations.
  */
 GeoFire.distance = function(location1, location2) {
@@ -275,12 +275,12 @@ var validateKey = function(key) {
 /**
  * Validates the inputted location and throws an error if it is invalid.
  *
- * @param {array} location The [latitude, longitude] pair to be verified.
+ * @param {Array.<number>} location The [latitude, longitude] pair to be verified.
  */
 var validateLocation = function(location) {
   var error;
 
-  if (Object.prototype.toString.call(location) !== "[object Array]") {
+  if (!Array.isArray(location)) {
     error = "location must be an array";
   }
   else if (location.length !== 2) {
@@ -339,7 +339,7 @@ var validateGeohash = function(geohash) {
 /**
  * Validates the inputted query criteria and throws an error if it is invalid.
  *
- * @param {object} newQueryCriteria The criteria which specifies the query's center and/or radius.
+ * @param {Object} newQueryCriteria The criteria which specifies the query's center and/or radius.
  */
 var validateCriteria = function(newQueryCriteria, requireCenterAndRadius) {
   if (typeof newQueryCriteria !== "object") {
@@ -353,11 +353,12 @@ var validateCriteria = function(newQueryCriteria, requireCenterAndRadius) {
   }
 
   // Throw an error if there are any extraneous attributes
-  for (var key in newQueryCriteria) {
-    if (newQueryCriteria.hasOwnProperty(key)) {
-      if (key !== "center" && key !== "radius") {
-        throw new Error("Unexpected attribute '" + key + "'' found in query criteria");
-      }
+  var keys = Object.keys(newQueryCriteria);
+  var numKeys = keys.length;
+  for (var i = 0; i < numKeys; ++i) {
+    var key = keys[i];
+    if (key !== "center" && key !== "radius") {
+      throw new Error("Unexpected attribute '" + key + "'' found in query criteria");
     }
   }
 
@@ -392,13 +393,12 @@ var degreesToRadians = function(degrees) {
 };
 
 /**
- * Generates a geohash of the specified precision/string length
- * from the [latitude, longitude] pair, specified as an array.
+ * Generates a geohash of the specified precision/string length from the  [latitude, longitude]
+ * pair, specified as an array.
  *
- * @param {array} location The [latitude, longitude] pair to encode into
- * a geohash.
- * @param {number} precision The length of the geohash to create. If no
- * precision is specified, the global default is used.
+ * @param {Array.<number>} location The [latitude, longitude] pair to encode into a geohash.
+ * @param {number=} precision The length of the geohash to create. If no precision is
+ * specified, the global default is used.
  * @return {string} The geohash of the inputted location.
  */
 var encodeGeohash = function(location, precision) {
@@ -465,10 +465,11 @@ var encodeGeohash = function(location, precision) {
 };
 
 /**
- * Calculates the number of degrees a given distance is at a given latitude
- * @param {number} distance
- * @param {number} latitude
- * @return {number} The number of degrees the distance corresponds to
+ * Calculates the number of degrees a given distance is at a given latitude.
+ *
+ * @param {number} distance The distance to convert.
+ * @param {number} latitude The latitude at which to calculate.
+ * @return {number} The number of degrees the distance corresponds to.
  */
 var metersToLongitudeDegrees = function(distance, latitude) {
   var radians = degreesToRadians(latitude);
@@ -484,11 +485,12 @@ var metersToLongitudeDegrees = function(distance, latitude) {
 };
 
 /**
- * Calculates the bits necessary to reach a given resolution in meters for
- * the longitude at a given latitude
- * @param {number} resolution
- * @param {number} latitude
- * @return {number}
+ * Calculates the bits necessary to reach a given resolution, in meters, for the longitude at a
+ * given latitude.
+ *
+ * @param {number} resolution The desired resolution.
+ * @param {number} latitude The latitude used in the conversion.
+ * @return {number} The bits necessary to reach a given resolution, in meters.
  */
 var longitudeBitsForResolution = function(resolution, latitude) {
   var degs = metersToLongitudeDegrees(resolution, latitude);
@@ -496,18 +498,19 @@ var longitudeBitsForResolution = function(resolution, latitude) {
 };
 
 /**
- * Calculates the bits necessary to reach a given resolution in meters for
- * the latitude
- * @param {number} resolution
+ * Calculates the bits necessary to reach a given resolution, in meters, for the latitude.
+ *
+ * @param {number} resolution The bits necessary to reach a given resolution, in meters.
  */
 var latitudeBitsForResolution = function(resolution) {
   return Math.min(Math.log2(g_EARTH_MERI_CIRCUMFERENCE/2/resolution), g_MAXIMUM_BITS_PRECISION);
 };
 
 /**
- * Wraps the longitude to [-180,180]
- * @param {number} longitude
- * @return {number} longitude
+ * Wraps the longitude to [-180,180].
+ *
+ * @param {number} longitude The longitude to wrap.
+ * @return {number} longitude The resulting longitude.
  */
 var wrapLongitude = function(longitude) {
   if (longitude <= 180 && longitude >= -180) {
@@ -523,12 +526,12 @@ var wrapLongitude = function(longitude) {
 };
 
 /**
- * Calculates the maximum number of bits of a geohash to get
- * a bounding box that is larger than a given size at the given
- * coordinate.
- * @param {array} coordinate The coordinate as a [latitude, longitude] pair
- * @param {number} size The size of the bounding box
- * @return {number} The number of bits necessary for the geohash
+ * Calculates the maximum number of bits of a geohash to get a bounding box that is larger than a
+ * given size at the given coordinate.
+ *
+ * @param {Array.<number>} coordinate The coordinate as a [latitude, longitude] pair.
+ * @param {number} size The size of the bounding box.
+ * @return {number} The number of bits necessary for the geohash.
  */
 var boundingBoxBits = function(coordinate, size) {
   var latDeltaDegrees = size/g_METERS_PER_DEGREE_LATITUDE;
@@ -541,13 +544,13 @@ var boundingBoxBits = function(coordinate, size) {
 };
 
 /**
- * Calculates 8 points on the bounding box and the center of a given circle.
- * At least one geohash of these 9 coordinates, truncated to a precision of
- * at most radius, are guaranteed to be prefixes of any geohash that lies
- * within the circle.
- * @param {array} center The center given as [latitude, longitude]
- * @param {number} radius The radius of the circle
- * @return {Array.<Array.<Number>>} The four bounding box points
+ * Calculates eight points on the bounding box and the center of a given circle. At least one
+ * geohash of these nine coordinates, truncated to a precision of at most radius, are guaranteed
+ * to be prefixes of any geohash that lies within the circle.
+ *
+ * @param {Array.<number>} center The center given as [latitude, longitude].
+ * @param {number} radius The radius of the circle.
+ * @return {Array.<Array.<number>>} The eight bounding box points.
  */
 var boundingBoxCoordinates = function(center, radius) {
   var latDegrees = radius/g_METERS_PER_DEGREE_LATITUDE;
@@ -570,10 +573,11 @@ var boundingBoxCoordinates = function(center, radius) {
 };
 
 /**
- * Calculates the bounding box query for a geohash with x bits precision
- * @param {string} geohash
- * @param {number} bits
- * @return {array} A [start,end] pair
+ * Calculates the bounding box query for a geohash with x bits precision.
+ *
+ * @param {string} geohash The geohash whose bounding box query to generate.
+ * @param {number} bits The number of bits of precision.
+ * @return {Array.<string>} A [start, end] pair of geohashes.
  */
 var geohashQuery = function(geohash, bits) {
   validateGeohash(geohash);
@@ -585,9 +589,6 @@ var geohashQuery = function(geohash, bits) {
   var base = geohash.substring(0, geohash.length - 1);
   var lastValue = g_BASE32.indexOf(geohash.charAt(geohash.length - 1));
   var significantBits = bits - (base.length*g_BITS_PER_CHAR);
-  if (significantBits === 0) {
-    return [base, base+"~"];
-  }
   var unusedBits = (g_BITS_PER_CHAR - significantBits);
   /*jshint bitwise: false*/
   // delete unused bits
@@ -603,12 +604,12 @@ var geohashQuery = function(geohash, bits) {
 };
 
 /**
- * Calculates a set of queries to fully contain a given circle
- * A query is a [start,end] pair where any geohash is guaranteed to
- * be lexiographically larger then start and smaller than end
- * @param {array} center The center given as [latitude, longitude] pair
- * @param {number} radius The radius of the circle
- * @return {array} An array of geohashes containing a [start,end] pair
+ * Calculates a set of queries to fully contain a given circle. A query is a [start, end] pair
+ * where any geohash is guaranteed to be lexiographically larger then start and smaller than end.
+ *
+ * @param {Array.<number>} center The center given as [latitude, longitude] pair.
+ * @param {number} radius The radius of the circle.
+ * @return {Array.<Array.<string>>} An array of geohashes containing a [start, end] pair.
  */
 var geohashQueries = function(center, radius) {
   validateLocation(center);
@@ -627,12 +628,12 @@ var geohashQueries = function(center, radius) {
 };
 
 /**
- * Encodes a location and geohash as a GeoFire object
+ * Encodes a location and geohash as a GeoFire object.
  *
- * @param {array} location The location as [latitude, longitude] pair.
- * @param {string} geohash The geohash of the location
+ * @param {Array.<number>} location The location as [latitude, longitude] pair.
+ * @param {string} geohash The geohash of the location.
  * @param {Object} data The optional data to include on the index (keep this small)
- * @return {Object} The location encoded as GeoFire object
+ * @return {Object} The location encoded as GeoFire object.
  */
 function encodeGeoFireObject(location, geohash, data) {
   if(typeof data === "undefined") {
@@ -663,8 +664,9 @@ function decodeGeoFireDataObject(geoFireObj) {
 /**
  * Decodes the location given as GeoFire object. Returns null if decoding fails
  *
- * @param {Object} geoFireObj The location encoded as GeoFire object
- * @return {array} location The location as [latitude, longitude] pair or null if decoding fails
+ * @param {Object} geoFireObj The location encoded as GeoFire object.
+ * @return {?Array.<number>} location The location as [latitude, longitude] pair or null if
+ * decoding fails.
  */
 function decodeGeoFireObject(geoFireObj) {
   if (geoFireObj !== null && geoFireObj.hasOwnProperty("l") && Array.isArray(geoFireObj.l) && geoFireObj.l.length === 2) {
@@ -680,7 +682,7 @@ function decodeGeoFireObject(geoFireObj) {
  * @constructor
  * @this {GeoQuery}
  * @param {Firebase} firebaseRef A Firebase reference.
- * @param {object} queryCriteria The criteria which specifies the query's center and radius.
+ * @param {Object} queryCriteria The criteria which specifies the query's center and radius.
  */
 var GeoQuery = function (firebaseRef, queryCriteria) {
   /*********************/
@@ -691,8 +693,8 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    *
    * @param {string} eventType The event type whose callbacks to fire. One of "key_entered", "key_exited", or "key_moved".
    * @param {string} key The key of the location for which to fire the callbacks.
-   * @param {array|null} location The location as latitude longitude pair
-   * @param {double|null} distanceFromCenter The distance from the center or null
+   * @param {?Array.<number>} location The location as [latitude, longitude] pair
+   * @param {?double} distanceFromCenter The distance from the center or null.
    * @param {Object|null} data The optionally stored data object on the index
    */
   function _fireCallbacksForKey(eventType, key, location, distanceFromCenter, data) {
@@ -717,8 +719,9 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
 
   /**
    * Decodes a query string to a query
-   * @param {string} str The encoded query
-   * @return {array} The decoded query as a [start,end] pair
+   *
+   * @param {string} str The encoded query.
+   * @return {Array.<string>} The decoded query as a [start, end] pair.
    */
   function _stringToQuery(string) {
     var decoded = string.split(":");
@@ -729,9 +732,10 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
   }
 
   /**
-   * Encodes a query as a string for easier indexing and equality
-   * @param {array} query The query to encode
-   * @param {string} The encoded query as string
+   * Encodes a query as a string for easier indexing and equality.
+   *
+   * @param {Array.<string>} query The query to encode.
+   * @param {string} The encoded query as string.
    */
   function _queryToString(query) {
     if (query.length !== 2) {
@@ -741,9 +745,10 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
   }
 
   /**
-   * Turns off all callbacks for geo query
-   * @param {array} query The geohash query
-   * @param {object} queryState An object storing the current state of the query
+   * Turns off all callbacks for the provide geohash query.
+   *
+   * @param {Array.<string>} query The geohash query.
+   * @param {Object} queryState An object storing the current state of the query.
    */
   function _cancelGeohashQuery(query, queryState) {
     var queryRef = _firebaseRef.startAt(query[0]).endAt(query[1]);
@@ -757,27 +762,29 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * Removes unnecessary Firebase queries which are currently being queried.
    */
   function _cleanUpCurrentGeohashesQueried() {
-    for (var geohashQueryStr in _currentGeohashesQueried) {
-      if (_currentGeohashesQueried.hasOwnProperty(geohashQueryStr)) {
-        var queryState = _currentGeohashesQueried[geohashQueryStr];
-        if (queryState.active === false) {
-          var query = _stringToQuery(geohashQueryStr);
-          // Delete the geohash since it should no longer be queried
-          _cancelGeohashQuery(query, queryState);
-          delete _currentGeohashesQueried[geohashQueryStr];
-        }
+    var keys = Object.keys(_currentGeohashesQueried);
+    var numKeys = keys.length;
+    for (var i = 0; i < numKeys; ++i) {
+      var geohashQueryStr = keys[i];
+      var queryState = _currentGeohashesQueried[geohashQueryStr];
+      if (queryState.active === false) {
+        var query = _stringToQuery(geohashQueryStr);
+        // Delete the geohash since it should no longer be queried
+        _cancelGeohashQuery(query, queryState);
+        delete _currentGeohashesQueried[geohashQueryStr];
       }
     }
 
     // Delete each location which should no longer be queried
-    for (var key in _locationsTracked) {
-      if (_locationsTracked.hasOwnProperty(key)) {
-        if (!_geohashInSomeQuery(_locationsTracked[key].geohash)) {
-          if (_locationsTracked[key].isInQuery) {
-            throw new Error("Internal State error, trying to remove location that is still in query");
-          }
-          delete _locationsTracked[key];
+    keys = Object.keys(_locationsTracked);
+    numKeys = keys.length;
+    for (i = 0; i < numKeys; ++i) {
+      var key = keys[i];
+      if (!_geohashInSomeQuery(_locationsTracked[key].geohash)) {
+        if (_locationsTracked[key].isInQuery) {
+          throw new Error("Internal State error, trying to remove location that is still in query");
         }
+        delete _locationsTracked[key];
       }
     }
 
@@ -793,13 +800,13 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
 
   /**
    * Callback for any updates to locations. Will update the information about a key and fire any necessary
-   * events every time the key's location changes
+   * events every time the key's location changes.
    *
    * When a key is removed from GeoFire or the query, this function will be called with null and performs
    * any necessary cleanup.
    *
-   * @param {string} key The key of the geofire location
-   * @param {array|null} location The location as [latitude, longitude] pair
+   * @param {string} key The key of the geofire location.
+   * @param {?Array.<number>} location The location as [latitude, longitude] pair.
    * @param {Object|null} data The optional data to store with the location
    */
   function _updateLocation(key, location, data) {
@@ -833,13 +840,16 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
   }
 
   /**
-   * Checks if this geohash is currently part of any of the geohash queries
+   * Checks if this geohash is currently part of any of the geohash queries.
    *
-   * @param {string} geohash The geohash
-   * @param {boolean} Returns true if the geohash is part of any of the current geohash queries
+   * @param {string} geohash The geohash.
+   * @param {boolean} Returns true if the geohash is part of any of the current geohash queries.
    */
   function _geohashInSomeQuery(geohash) {
-    for (var queryStr in _currentGeohashesQueried) {
+    var keys = Object.keys(_currentGeohashesQueried);
+    var numKeys = keys.length;
+    for (var i = 0; i < numKeys; ++i) {
+      var queryStr = keys[i];
       if (_currentGeohashesQueried.hasOwnProperty(queryStr)) {
         var query = _stringToQuery(queryStr);
         if (geohash >= query[0] && geohash <= query[1]) {
@@ -851,10 +861,11 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
   }
 
   /**
-   * Removes the location from the local state and fires any events if necessary
+   * Removes the location from the local state and fires any events if necessary.
    *
-   * @param {string} key The key to be removed
-   * @param {array} currentLocation The current location as [latitude, longitude] pair or null if removed
+   * @param {string} key The key to be removed.
+   * @param {?Array.<number>} currentLocation The current location as [latitude, longitude] pair
+   * or null if removed.
    */
   function _removeLocation(key, currentLocation) {
     var locationDict = _locationsTracked[key];
@@ -939,16 +950,17 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
     // For all of the geohashes that we are already currently querying, check if they are still
     // supposed to be queried. If so, don't re-query them. Otherwise, mark them to be un-queried
     // next time we clean up the current geohashes queried dictionary.
-    for (var geohashQueryStr in _currentGeohashesQueried) {
-      if (_currentGeohashesQueried.hasOwnProperty(geohashQueryStr)) {
-        var index = geohashesToQuery.indexOf(geohashQueryStr);
-        if (index === -1) {
-          _currentGeohashesQueried[geohashQueryStr].active = false;
-        }
-        else {
-          _currentGeohashesQueried[geohashQueryStr].active = true;
-          geohashesToQuery.splice(index, 1);
-        }
+    var keys = Object.keys(_currentGeohashesQueried);
+    var numKeys = keys.length;
+    for (var i = 0; i < numKeys; ++i) {
+      var geohashQueryStr = keys[i];
+      var index = geohashesToQuery.indexOf(geohashQueryStr);
+      if (index === -1) {
+        _currentGeohashesQueried[geohashQueryStr].active = false;
+      }
+      else {
+        _currentGeohashesQueried[geohashQueryStr].active = true;
+        geohashesToQuery.splice(index, 1);
       }
     }
 
@@ -1009,7 +1021,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
   /**
    * Returns the location signifying the center of this query.
    *
-   * @return {array} The [latitude, longitude] pair signifying the center of this query.
+   * @return {Array.<number>} The [latitude, longitude] pair signifying the center of this query.
    */
   this.center = function() {
     return _center;
@@ -1018,7 +1030,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
   /**
    * Returns the radius of this query, in kilometers.
    *
-   * @return {integer} The radius of this query, in kilometers.
+   * @return {number} The radius of this query, in kilometers.
    */
   this.radius = function() {
     return _radius;
@@ -1027,7 +1039,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
   /**
    * Updates the criteria for this query.
    *
-   * @param {object} newQueryCriteria The criteria which specifies the query's center and radius.
+   * @param {Object} newQueryCriteria The criteria which specifies the query's center and radius.
    */
   this.updateCriteria = function(newQueryCriteria) {
     // Validate and save the new query criteria
@@ -1037,29 +1049,32 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
 
     // Loop through all of the locations in the query, update their distance from the center of the
     // query, and fire any appropriate events
-    for (var key in _locationsTracked) {
-      if (_locationsTracked.hasOwnProperty(key)) {
-        // Get the cached information for this location
-        var locationDict = _locationsTracked[key];
+    var keys = Object.keys(_locationsTracked);
+    var numKeys = keys.length;
+    for (var i = 0; i < numKeys; ++i) {
+      var key = keys[i];
 
-        // Save if the location was already in the query
-        var wasAlreadyInQuery = locationDict.isInQuery;
+      // Get the cached information for this location
+      var locationDict = _locationsTracked[key];
 
-        // Update the location's distance to the new query center
-        locationDict.distanceFromCenter = GeoFire.distance(locationDict.location, _center);
+      // Save if the location was already in the query
+      var wasAlreadyInQuery = locationDict.isInQuery;
 
-        // Determine if the location is now in this query
-        locationDict.isInQuery = (locationDict.distanceFromCenter <= _radius);
+      // Update the location's distance to the new query center
+      locationDict.distanceFromCenter = GeoFire.distance(locationDict.location, _center);
 
-        // If the location just left the query, fire the "key_exited" callbacks
-        if (wasAlreadyInQuery && !locationDict.isInQuery) {
-          _fireCallbacksForKey("key_exited", key, locationDict.location, locationDict.distanceFromCenter);
-        }
+      // Determine if the location is now in this query
+      locationDict.isInQuery = (locationDict.distanceFromCenter <= _radius);
 
-        // If the location just entered the query, fire the "key_entered" callbacks
-        else if (!wasAlreadyInQuery && locationDict.isInQuery) {
-          _fireCallbacksForKey("key_entered", key, locationDict.location, locationDict.distanceFromCenter, locationDict.data);
-        }
+
+      // If the location just left the query, fire the "key_exited" callbacks
+      if (wasAlreadyInQuery && !locationDict.isInQuery) {
+        _fireCallbacksForKey("key_exited", key, locationDict.location, locationDict.distanceFromCenter);
+      }
+
+      // If the location just entered the query, fire the "key_entered" callbacks
+      else if (!wasAlreadyInQuery && locationDict.isInQuery) {
+        _fireCallbacksForKey("key_entered", key, locationDict.location, locationDict.distanceFromCenter, locationDict.data);
       }
     }
 
@@ -1096,7 +1111,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    *
    * @param {string} eventType The event type for which to attach the callback. One of "ready", "key_entered",
    * "key_exited", or "key_moved".
-   * @param {function} callback Callback function to be called when an event of type eventType fires.
+   * @callback callback Callback function to be called when an event of type eventType fires.
    * @return {GeoCallbackRegistration} A callback registration which can be used to cancel the provided callback.
    */
   this.on = function(eventType, callback) {
@@ -1113,12 +1128,13 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
 
     // If this is a "key_entered" callback, fire it for every location already within this query
     if (eventType === "key_entered") {
-      for (var key in _locationsTracked) {
-        if (_locationsTracked.hasOwnProperty(key)) {
-          var locationDict = _locationsTracked[key];
-          if (locationDict.isInQuery) {
-            callback(key, locationDict.location, locationDict.distanceFromCenter, locationDict.data);
-          }
+      var keys = Object.keys(_locationsTracked);
+      var numKeys = keys.length;
+      for (var i = 0; i < numKeys; ++i) {
+        var key = keys[i];
+        var locationDict = _locationsTracked[key];
+        if (locationDict.isInQuery) {
+          callback(key, locationDict.location, locationDict.distanceFromCenter, locationDict.data);
         }
       }
     }
@@ -1150,12 +1166,13 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
     };
 
     // Turn off all Firebase listeners for the current geohashes being queried
-    for (var geohashQueryStr in _currentGeohashesQueried) {
-      if (_currentGeohashesQueried.hasOwnProperty(geohashQueryStr)) {
-        var query = _stringToQuery(geohashQueryStr);
-        _cancelGeohashQuery(query, _currentGeohashesQueried[geohashQueryStr]);
-        delete _currentGeohashesQueried[geohashQueryStr];
-      }
+    var keys = Object.keys(_currentGeohashesQueried);
+    var numKeys = keys.length;
+    for (var i = 0; i < numKeys; ++i) {
+      var geohashQueryStr = keys[i];
+      var query = _stringToQuery(geohashQueryStr);
+      _cancelGeohashQuery(query, _currentGeohashesQueried[geohashQueryStr]);
+      delete _currentGeohashesQueried[geohashQueryStr];
     }
 
     // Delete any stored locations

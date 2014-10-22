@@ -65,12 +65,12 @@ var validateKey = function(key) {
 /**
  * Validates the inputted location and throws an error if it is invalid.
  *
- * @param {array} location The [latitude, longitude] pair to be verified.
+ * @param {Array.<number>} location The [latitude, longitude] pair to be verified.
  */
 var validateLocation = function(location) {
   var error;
 
-  if (Object.prototype.toString.call(location) !== "[object Array]") {
+  if (!Array.isArray(location)) {
     error = "location must be an array";
   }
   else if (location.length !== 2) {
@@ -129,7 +129,7 @@ var validateGeohash = function(geohash) {
 /**
  * Validates the inputted query criteria and throws an error if it is invalid.
  *
- * @param {object} newQueryCriteria The criteria which specifies the query's center and/or radius.
+ * @param {Object} newQueryCriteria The criteria which specifies the query's center and/or radius.
  */
 var validateCriteria = function(newQueryCriteria, requireCenterAndRadius) {
   if (typeof newQueryCriteria !== "object") {
@@ -143,11 +143,12 @@ var validateCriteria = function(newQueryCriteria, requireCenterAndRadius) {
   }
 
   // Throw an error if there are any extraneous attributes
-  for (var key in newQueryCriteria) {
-    if (newQueryCriteria.hasOwnProperty(key)) {
-      if (key !== "center" && key !== "radius") {
-        throw new Error("Unexpected attribute '" + key + "'' found in query criteria");
-      }
+  var keys = Object.keys(newQueryCriteria);
+  var numKeys = keys.length;
+  for (var i = 0; i < numKeys; ++i) {
+    var key = keys[i];
+    if (key !== "center" && key !== "radius") {
+      throw new Error("Unexpected attribute '" + key + "'' found in query criteria");
     }
   }
 
@@ -182,13 +183,12 @@ var degreesToRadians = function(degrees) {
 };
 
 /**
- * Generates a geohash of the specified precision/string length
- * from the [latitude, longitude] pair, specified as an array.
+ * Generates a geohash of the specified precision/string length from the  [latitude, longitude]
+ * pair, specified as an array.
  *
- * @param {array} location The [latitude, longitude] pair to encode into
- * a geohash.
- * @param {number} precision The length of the geohash to create. If no
- * precision is specified, the global default is used.
+ * @param {Array.<number>} location The [latitude, longitude] pair to encode into a geohash.
+ * @param {number=} precision The length of the geohash to create. If no precision is
+ * specified, the global default is used.
  * @return {string} The geohash of the inputted location.
  */
 var encodeGeohash = function(location, precision) {
@@ -255,10 +255,11 @@ var encodeGeohash = function(location, precision) {
 };
 
 /**
- * Calculates the number of degrees a given distance is at a given latitude
- * @param {number} distance
- * @param {number} latitude
- * @return {number} The number of degrees the distance corresponds to
+ * Calculates the number of degrees a given distance is at a given latitude.
+ *
+ * @param {number} distance The distance to convert.
+ * @param {number} latitude The latitude at which to calculate.
+ * @return {number} The number of degrees the distance corresponds to.
  */
 var metersToLongitudeDegrees = function(distance, latitude) {
   var radians = degreesToRadians(latitude);
@@ -274,11 +275,12 @@ var metersToLongitudeDegrees = function(distance, latitude) {
 };
 
 /**
- * Calculates the bits necessary to reach a given resolution in meters for
- * the longitude at a given latitude
- * @param {number} resolution
- * @param {number} latitude
- * @return {number}
+ * Calculates the bits necessary to reach a given resolution, in meters, for the longitude at a
+ * given latitude.
+ *
+ * @param {number} resolution The desired resolution.
+ * @param {number} latitude The latitude used in the conversion.
+ * @return {number} The bits necessary to reach a given resolution, in meters.
  */
 var longitudeBitsForResolution = function(resolution, latitude) {
   var degs = metersToLongitudeDegrees(resolution, latitude);
@@ -286,18 +288,19 @@ var longitudeBitsForResolution = function(resolution, latitude) {
 };
 
 /**
- * Calculates the bits necessary to reach a given resolution in meters for
- * the latitude
- * @param {number} resolution
+ * Calculates the bits necessary to reach a given resolution, in meters, for the latitude.
+ *
+ * @param {number} resolution The bits necessary to reach a given resolution, in meters.
  */
 var latitudeBitsForResolution = function(resolution) {
   return Math.min(Math.log2(g_EARTH_MERI_CIRCUMFERENCE/2/resolution), g_MAXIMUM_BITS_PRECISION);
 };
 
 /**
- * Wraps the longitude to [-180,180]
- * @param {number} longitude
- * @return {number} longitude
+ * Wraps the longitude to [-180,180].
+ *
+ * @param {number} longitude The longitude to wrap.
+ * @return {number} longitude The resulting longitude.
  */
 var wrapLongitude = function(longitude) {
   if (longitude <= 180 && longitude >= -180) {
@@ -313,12 +316,12 @@ var wrapLongitude = function(longitude) {
 };
 
 /**
- * Calculates the maximum number of bits of a geohash to get
- * a bounding box that is larger than a given size at the given
- * coordinate.
- * @param {array} coordinate The coordinate as a [latitude, longitude] pair
- * @param {number} size The size of the bounding box
- * @return {number} The number of bits necessary for the geohash
+ * Calculates the maximum number of bits of a geohash to get a bounding box that is larger than a
+ * given size at the given coordinate.
+ *
+ * @param {Array.<number>} coordinate The coordinate as a [latitude, longitude] pair.
+ * @param {number} size The size of the bounding box.
+ * @return {number} The number of bits necessary for the geohash.
  */
 var boundingBoxBits = function(coordinate, size) {
   var latDeltaDegrees = size/g_METERS_PER_DEGREE_LATITUDE;
@@ -331,13 +334,13 @@ var boundingBoxBits = function(coordinate, size) {
 };
 
 /**
- * Calculates 8 points on the bounding box and the center of a given circle.
- * At least one geohash of these 9 coordinates, truncated to a precision of
- * at most radius, are guaranteed to be prefixes of any geohash that lies
- * within the circle.
- * @param {array} center The center given as [latitude, longitude]
- * @param {number} radius The radius of the circle
- * @return {Array.<Array.<Number>>} The four bounding box points
+ * Calculates eight points on the bounding box and the center of a given circle. At least one
+ * geohash of these nine coordinates, truncated to a precision of at most radius, are guaranteed
+ * to be prefixes of any geohash that lies within the circle.
+ *
+ * @param {Array.<number>} center The center given as [latitude, longitude].
+ * @param {number} radius The radius of the circle.
+ * @return {Array.<Array.<number>>} The eight bounding box points.
  */
 var boundingBoxCoordinates = function(center, radius) {
   var latDegrees = radius/g_METERS_PER_DEGREE_LATITUDE;
@@ -360,10 +363,11 @@ var boundingBoxCoordinates = function(center, radius) {
 };
 
 /**
- * Calculates the bounding box query for a geohash with x bits precision
- * @param {string} geohash
- * @param {number} bits
- * @return {array} A [start,end] pair
+ * Calculates the bounding box query for a geohash with x bits precision.
+ *
+ * @param {string} geohash The geohash whose bounding box query to generate.
+ * @param {number} bits The number of bits of precision.
+ * @return {Array.<string>} A [start, end] pair of geohashes.
  */
 var geohashQuery = function(geohash, bits) {
   validateGeohash(geohash);
@@ -375,9 +379,6 @@ var geohashQuery = function(geohash, bits) {
   var base = geohash.substring(0, geohash.length - 1);
   var lastValue = g_BASE32.indexOf(geohash.charAt(geohash.length - 1));
   var significantBits = bits - (base.length*g_BITS_PER_CHAR);
-  if (significantBits === 0) {
-    return [base, base+"~"];
-  }
   var unusedBits = (g_BITS_PER_CHAR - significantBits);
   /*jshint bitwise: false*/
   // delete unused bits
@@ -393,12 +394,12 @@ var geohashQuery = function(geohash, bits) {
 };
 
 /**
- * Calculates a set of queries to fully contain a given circle
- * A query is a [start,end] pair where any geohash is guaranteed to
- * be lexiographically larger then start and smaller than end
- * @param {array} center The center given as [latitude, longitude] pair
- * @param {number} radius The radius of the circle
- * @return {array} An array of geohashes containing a [start,end] pair
+ * Calculates a set of queries to fully contain a given circle. A query is a [start, end] pair
+ * where any geohash is guaranteed to be lexiographically larger then start and smaller than end.
+ *
+ * @param {Array.<number>} center The center given as [latitude, longitude] pair.
+ * @param {number} radius The radius of the circle.
+ * @return {Array.<Array.<string>>} An array of geohashes containing a [start, end] pair.
  */
 var geohashQueries = function(center, radius) {
   validateLocation(center);
@@ -417,12 +418,12 @@ var geohashQueries = function(center, radius) {
 };
 
 /**
- * Encodes a location and geohash as a GeoFire object
+ * Encodes a location and geohash as a GeoFire object.
  *
- * @param {array} location The location as [latitude, longitude] pair.
- * @param {string} geohash The geohash of the location
+ * @param {Array.<number>} location The location as [latitude, longitude] pair.
+ * @param {string} geohash The geohash of the location.
  * @param {Object} data The optional data to include on the index (keep this small)
- * @return {Object} The location encoded as GeoFire object
+ * @return {Object} The location encoded as GeoFire object.
  */
 function encodeGeoFireObject(location, geohash, data) {
   if(typeof data === "undefined") {
@@ -453,8 +454,9 @@ function decodeGeoFireDataObject(geoFireObj) {
 /**
  * Decodes the location given as GeoFire object. Returns null if decoding fails
  *
- * @param {Object} geoFireObj The location encoded as GeoFire object
- * @return {array} location The location as [latitude, longitude] pair or null if decoding fails
+ * @param {Object} geoFireObj The location encoded as GeoFire object.
+ * @return {?Array.<number>} location The location as [latitude, longitude] pair or null if
+ * decoding fails.
  */
 function decodeGeoFireObject(geoFireObj) {
   if (geoFireObj !== null && geoFireObj.hasOwnProperty("l") && Array.isArray(geoFireObj.l) && geoFireObj.l.length === 2) {

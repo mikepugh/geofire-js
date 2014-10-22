@@ -140,6 +140,7 @@ function Checklist(items, expect, done) {
  * tend to fail due to the Jasmine ASYNC timeout and provide no details of what actually
  * went wrong.
  **/
-function failTestOnCaughtError(err) {
-  expect(err).toBeNull();
+
+function failTestOnCaughtError(error) {
+  expect(error).toBeNull();
 }
