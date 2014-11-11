@@ -751,7 +751,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {Object} queryState An object storing the current state of the query.
    */
   function _cancelGeohashQuery(query, queryState) {
-    var queryRef = _firebaseRef.startAt(query[0]).endAt(query[1]);
+    var queryRef = _firebaseRef.orderByChild("g").startAt(query[0]).endAt(query[1]);
     queryRef.off("child_added", queryState.childAddedCallback);
     queryRef.off("child_removed", queryState.childRemovedCallback);
     queryRef.off("child_changed", queryState.childChangedCallback);
@@ -902,7 +902,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {Firebase DataSnapshot} locationDataSnapshot A snapshot of the data stored for this location.
    */
   function _childRemovedCallback(locationDataSnapshot) {
-    var key = locationDataSnapshot.name();
+    var key = locationDataSnapshot.key();
     if (_locationsTracked.hasOwnProperty(key)) {
       _firebaseRef.child(key).once("value", function(snapshot) {
         var location = snapshot.val() === null ? null : decodeGeoFireObject(snapshot.val());
@@ -982,7 +982,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
       var query = _stringToQuery(toQueryStr);
 
       // Create the Firebase query
-      var firebaseQuery = _firebaseRef.startAt(query[0]).endAt(query[1]);
+      var firebaseQuery = _firebaseRef.orderByChild("g").startAt(query[0]).endAt(query[1]);
 
       // For every new matching geohash, determine if we should fire the "key_entered" event
       var childAddedCallback = firebaseQuery.on("child_added", _childAddedCallback);

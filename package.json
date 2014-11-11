@@ -24,7 +24,7 @@
     "realtime",
     "geolocation"
   ],
-  "main": "dist/geofire.min.js",
+  "main": "dist/geofire.js",
   "files": [
     "dist/**",
     "LICENSE",
@@ -32,7 +32,7 @@
     "package.json"
   ],
   "dependencies": {
-    "firebase": "1.1.x",
+    "firebase": "2.0.x",
     "rsvp": "~3.0.13"
   },
   "devDependencies": {
