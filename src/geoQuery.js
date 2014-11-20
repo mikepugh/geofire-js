@@ -205,7 +205,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    */
   function _childAddedCallback(locationDataSnapshot) {
     var val = locationDataSnapshot.val();
-    _updateLocation(locationDataSnapshot.name(), decodeGeoFireObject(val), decodeGeoFireDataObject(val));
+    _updateLocation(locationDataSnapshot.key(), decodeGeoFireObject(val), decodeGeoFireDataObject(val));
   }
 
   /**
@@ -215,7 +215,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    */
   function _childChangedCallback(locationDataSnapshot) {
     var val = locationDataSnapshot.val();
-    _updateLocation(locationDataSnapshot.name(), decodeGeoFireObject(val), decodeGeoFireDataObject(val));
+    _updateLocation(locationDataSnapshot.key(), decodeGeoFireObject(val), decodeGeoFireDataObject(val));
   }
 
   /**
