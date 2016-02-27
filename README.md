@@ -1,5 +1,6 @@
 # GeoFire for JavaScript — Realtime location queries with Firebase
 
+<<<<<<< HEAD
 [![Build Status](https://travis-ci.org/mikepugh/geofire-js.svg?branch=master)](https://travis-ci.org/mikepugh/geofire-js)
 [![Coverage Status](https://img.shields.io/coveralls/mikepugh/geofire-js.svg)](https://coveralls.io/r/mikepugh/geofire-js)
 [![Version](https://badge.fury.io/gh/mikepugh%2Fgeofire-js.svg)](http://badge.fury.io/gh/mikepugh%2Fgeofire-js)
@@ -18,13 +19,18 @@ on the GeoFire index so that you can quickly display that information without ha
 to another path in your Firebase forge.
 
 ## About this Library
+=======
+[![Build Status](https://travis-ci.org/firebase/geofire-js.svg?branch=master)](https://travis-ci.org/firebase/geofire-js)
+[![Coverage Status](https://img.shields.io/coveralls/firebase/geofire-js.svg?branch=master&style=flat)](https://coveralls.io/r/firebase/geofire-js)
+[![Version](https://badge.fury.io/gh/firebase%2Fgeofire-js.svg)](http://badge.fury.io/gh/firebase%2Fgeofire-js)
+>>>>>>> 52610385dcc3f649c56f179dd92f58ab7cd20913
 
 GeoFire is an open-source library that allows you to store and query a set of keys based on their
 geographic location. At its heart, GeoFire simply stores locations with string keys. Its main
 benefit, however, is the possibility of retrieving only those keys within a given geographic
 area - all in realtime.
 
-GeoFire uses [Firebase](https://www.firebase.com/?utm_source=geofire-js) for data storage, allowing
+GeoFire uses the [Firebase](https://www.firebase.com/?utm_source=geofire-js) database for data storage, allowing
 query results to be updated in realtime as they change. GeoFire *selectively loads only the data
 near certain locations, keeping your applications light and responsive*, even with extremely large
 datasets.
@@ -35,7 +41,7 @@ and [Java](https://github.com/firebase/geofire-java).
 ### Integrating GeoFire with your data
 
 GeoFire is designed as a lightweight add-on to Firebase. To keep things simple, GeoFire stores data
-in its own format and its own location within your Firebase. This allows your existing data format
+in its own format and its own location within your Firebase database. This allows your existing data format
 and security rules to remain unchanged while still providing you with an easy solution for geo
 queries.
 
@@ -70,7 +76,7 @@ using Security and Firebase Rules.
 GeoFire 3.x has the same API as 2.x but uses a different underlying data structure to store its
 location data. If you are currently using 2.x and want to upgrade to 3.x, you must run the
 [GeoFire 3.x migration script](https://github.com/firebase/geofire-js/blob/master/migration/migrateToV3.js)
-on your Firebase. This Node.js script only needs to be run one time and should take only a few seconds
+on your Firebase database. This Node.js script only needs to be run one time and should take only a few seconds
 to minutes depending on the size of your data. To run the script, copy the files in this repo's
 `/migration/` folder to your machine and run the following commands:
 
@@ -97,10 +103,10 @@ In order to use GeoFire in your project, you need to include the following files
 <script src="rsvp.min.js"></script>
 
 <!-- Firebase -->
-<script src="https://cdn.firebase.com/js/client/2.0.2/firebase.js"></script>
+<script src="https://cdn.firebase.com/js/client/2.2.5/firebase.js"></script>
 
 <!-- GeoFire -->
-<script src="https://cdn.firebase.com/libs/geofire/3.2.0/geofire.min.js"></script>
+<script src="https://cdn.firebase.com/libs/geofire/3.2.4/geofire.min.js"></script>
 ```
 
 Use the URL above to download both the minified and non-minified versions of GeoFire from the
@@ -122,19 +128,19 @@ $ bower install geofire --save
 
 ## Getting Started with Firebase
 
-GeoFire requires Firebase in order to store location data. You can [sign up here for a free account](https://www.firebase.com/signup/?utm_source=geofire-js).
+GeoFire requires the Firebase database in order to store location data. You can [sign up here for a free account](https://www.firebase.com/signup/?utm_source=geofire-js).
 
 
 ## API Reference
 
 ### GeoFire
 
-A `GeoFire` instance is used to read and write geolocation data to your Firebase and to create queries.
+A `GeoFire` instance is used to read and write geolocation data to your Firebase database and to create queries.
 
 #### new GeoFire(firebaseRef)
 
-Creates and returns a new `GeoFire` instance to manage your location data. Data will stored at
-the location pointed to by `firebaseRef`. Note that this `firebaseRef` can point to anywhere in your Firebase.
+Creates and returns a new `GeoFire` instance to manage your location data. Data will be stored at
+the location pointed to by `firebaseRef`. Note that this `firebaseRef` can point to anywhere in your Firebase database.
 
 ```JavaScript
 // Create a Firebase reference where GeoFire will store its information
@@ -146,7 +152,7 @@ var geoFire = new GeoFire(firebaseRef);
 
 #### GeoFire.ref()
 
-Returns the `Firebase` instance used to create this `GeoFire` instance.
+Returns the `Firebase` reference used to create this `GeoFire` instance.
 
 ```JavaScript
 var firebaseRef = new Firebase("https://<your-firebase>.firebaseio.com/");
@@ -169,7 +175,7 @@ location values. Locations must have the form `[latitude, longitude]`.
 Returns a promise which is fulfilled when the new location has been synchronized with the Firebase
 servers.
 
-Keys must be strings and [valid Firebase key
+Keys must be strings and [valid Firebase database key
 names](https://www.firebase.com/docs/web/guide/understanding-data.html#section-creating-references?utm_source=geofire-js).
 
 ```JavaScript

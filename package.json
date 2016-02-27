@@ -1,7 +1,7 @@
 {
   "name": "geofire",
   "description": "Location-based querying and filtering using Firebase",
-  "version": "3.0.3",
+  "version": "3.2.4",
   "author": "Firebase <support@firebase.com> (https://www.firebase.com/)",
   "homepage": "https://github.com/mikepugh/geofire-js/",
   "repository": {
@@ -11,12 +11,7 @@
   "bugs": {
     "url": "https://github.com/mikepugh/geofire-js/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://firebase.mit-license.org/"
-    }
-  ],
+  "license": "MIT",
   "keywords": [
     "geoquery",
     "location",
@@ -32,28 +27,32 @@
     "package.json"
   ],
   "dependencies": {
-    "firebase": "2.0.x",
-    "rsvp": "~3.0.13"
+    "firebase": "2.x.x",
+    "rsvp": "3.1.x"
   },
   "devDependencies": {
-    "gulp": "^3.5.6",
-    "gulp-concat": "^2.2.0",
-    "gulp-ext-replace": "0.0.5",
-    "gulp-jshint": "^1.5.1",
-    "gulp-karma": "0.0.4",
-    "gulp-uglify": "^0.2.1",
-    "jshint-stylish": "^0.2.0",
-    "streamqueue": "0.0.5",
-    "coveralls": "^2.11.1",
-    "karma": "^0.12.9",
-    "karma-coverage": "^0.2.4",
-    "karma-failed-reporter": "0.0.2",
-    "karma-jasmine": "~0.2.0",
-    "karma-phantomjs-launcher": "~0.1.4",
-    "karma-spec-reporter": "0.0.13"
+    "coveralls": "2.11.4",
+    "gulp": "3.9.0",
+    "gulp-concat": "2.6.0",
+    "gulp-ext-replace": "0.2.0",
+    "gulp-jshint": "1.11.2",
+    "gulp-karma": "0.0.5",
+    "gulp-uglify": "1.4.1",
+    "jasmine-core": "2.4.1",
+    "jshint-stylish": "2.0.1",
+    "karma": "0.13.21",
+    "karma-chrome-launcher": "0.2.0",
+    "karma-coverage": "0.5.2",
+    "karma-failed-reporter": "0.0.3",
+    "karma-firefox-launcher": "0.1.6",
+    "karma-jasmine": "0.3.6",
+    "karma-spec-reporter": "0.0.20",
+    "phantomjs-prebuilt": "^2.1.4",
+    "run-sequence": "^1.1.4",
+    "streamqueue": "0.1.1"
   },
   "scripts": {
     "test": "gulp test",
-    "travis": "gulp --travis"
+    "travis": "gulp"
   }
 }
