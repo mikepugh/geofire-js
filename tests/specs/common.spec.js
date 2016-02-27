@@ -5,7 +5,7 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 
 // Get a reference to a random demo Firebase
-var demoFirebaseUrl = "https://geofire.firebaseio.com";
+var demoFirebaseUrl = 'https://' + generateRandomString() + '.firebaseio-demo.com';
 
 // Define examples of valid and invalid parameters
 var invalidFirebaseRefs = [null, undefined, NaN, true, false, [], 0, 5, "", "a", ["hi", 1]];
@@ -19,7 +19,7 @@ var validQueryCriterias = [{center: [0,0], radius: 1000}, {center: [1,-180], rad
 var invalidQueryCriterias = [{}, {random: 100}, {center: [91,2], radius: 1000, random: "a"}, {center: [91,2], radius: 1000}, {center: [1,-181], radius: 1000}, {center: ["a",2], radius: 1000}, {center: [1,[1,2]], radius: 1000}, {center: [0,0], radius: -1}, {center: [null,2], radius: 1000}, {center: [1,undefined], radius: 1000}, {center: [NaN,0], radius: 1000}, {center: [1,2], radius: -10}, {center: [1,2], radius: "text"}, {center: [1,2], radius: [1,2]}, {center: [1,2], radius: null}, true, false, undefined, NaN, [], "a", 1];
 
 // Create global variables to hold the Firebase and GeoFire variables
-var firebaseRef, geoFire, geoQueries;
+var firebaseRef, geoFire, geoQueries = [];
 
 /**********************/
 /*  HELPER FUNCTIONS  */
