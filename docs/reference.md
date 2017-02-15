@@ -6,7 +6,8 @@
    - [`new GeoFire(firebaseRef)`](#new-geofirefirebaseref)
    - [`ref()`](#geofireref)
    - [`get(key)`](#geofiregetkey)
-   - [`set(keyOrLocations[, location])`](#geofiresetkeyorlocations-location)
+   - [`getWithData(key)`](#geofiregetwithdatakey)
+   - [`set(keyOrLocations[, location, data])`](#geofiresetkeyorlocations-location)
    - [`remove(key)`](#geofireremovekey)
    - [`query(queryCriteria)`](#geofirequeryquerycriteria)
  * [`GeoQuery`](#geoquery)
@@ -75,7 +76,14 @@ geoFire.get("some_key").then(function(location) {
 });
 ```
 
-### GeoFire.set(keyOrLocations[, location])
+### GeoFire.getWithData(key)
+
+Fetches the location stored for `key` and includes the custom data stored on the index.
+
+Returns a promise fulfilled with the `location` and `data` corresponding to the provided `key`.
+If `key` does not exist, the returned promise is fulfilled with `null`.
+
+### GeoFire.set(keyOrLocations[, location, data])
 
 Adds the specified key - location pair(s) to this `GeoFire`. If the provided `keyOrLocations`
 argument is a string, the single `location` will be added. The `keyOrLocations` argument can also
@@ -86,6 +94,10 @@ each one individually.
 If any of the provided keys already exist in this `GeoFire`, they will be overwritten with the new
 location values. Locations must have the form `[latitude, longitude]`.
 
+You may optionally pass in a `data` object of data to store on the index. Please keep this very light 
+- if you store large amounts of data then it will negatively affect performance.
+
+
 Returns a promise which is fulfilled when the new location has been synchronized with the Firebase
 servers.
 
@@ -93,7 +105,7 @@ Keys must be strings and [valid Firebase database key
 names](https://firebase.google.com/docs/database/web/structure-data).
 
 ```JavaScript
-geoFire.set("some_key", [37.79, -122.41]).then(function() {
+geoFire.set("some_key", [37.79, -122.41], { title: 'A Restaurant', rating: 4.3}).then(function() {
   console.log("Provided key has been added to GeoFire");
 }, function(error) {
   console.log("Error: " + error);
