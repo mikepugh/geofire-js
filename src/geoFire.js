@@ -92,22 +92,21 @@ var GeoFire = function(firebaseRef) {
    * If the provided key does not exist in the index, the returned promise is fulfilled with null.
    *
    * @param {string} key The key of the geofire object to retrieve
-   * @return {RSVP.Promise} A promise that is fulfilled with an object of {key, location, data}
+   * @return {Promise.<Array.<number>>} A promise that is fulfilled with an object of {key, location, data}
    */
   this.getWithData = function(key) {
-    validateKey(key);
-    return new RSVP.Promise(function(resolve, reject) {
-      _firebaseRef.child(key).once("value", function(dataSnapshot) {
-        var dsv = dataSnapshot.val();
-        if(dsv === null) {
-          resolve(null);
-        } else {
-          resolve({key: key, location: decodeGeoFireObject(dsv), data: decodeGeoFireDataObject(dsv)});
-        }
-      }, function (error) {
-        reject("Error: Firebase synchronization failed: " + error);
-      });
-    });
+    validateKey(key);    
+    return _firebaseRef.child(key).once("value").then(function(dataSnapshot) {
+      var dsv = dataSnapshot.val();
+      if(dsv === null) {
+        return null;
+      } else {
+        return { 
+          key: key, 
+          location: decodeGeoFireObject(dsv), 
+          data: decodeGeoFireDataObject(dsv)};          
+      }
+    });    
   };
 
   /**
