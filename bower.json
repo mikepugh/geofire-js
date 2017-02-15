@@ -3,7 +3,7 @@
   "description": "Location-based querying and filtering using Firebase",
   "version": "3.0.3",
   "authors": [
-    "Firebase <support@firebase.com> (https://www.firebase.com/)"
+    "Firebase (https://firebase.google.com/)"
   ],
   "homepage": "https://github.com/mikepugh/geofire-js/",
   "repository": {
@@ -33,10 +33,10 @@
     "changelog.txt"
   ],
   "dependencies": {
-    "firebase": "2.x.x",
-    "rsvp": "3.1.x"
+    "firebase": "^2.4.0 || 3.x.x"
   },
   "devDependencies": {
-    "jasmine": "~2.0.0"
+    "jasmine": "~2.0.0",
+    "rsvp": "^3.1.0"
   }
 }

@@ -204,8 +204,8 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {Firebase DataSnapshot} locationDataSnapshot A snapshot of the data stored for this location.
    */
   function _childAddedCallback(locationDataSnapshot) {
-    var val = locationDataSnapshot.val();
-    _updateLocation(locationDataSnapshot.key(), decodeGeoFireObject(val), decodeGeoFireDataObject(val));
+    var val = locationDataSnapshot.val();    
+    _updateLocation(getKey(locationDataSnapshot), decodeGeoFireObject(locationDataSnapshot.val()), decodeGeoFireDataObject(val));
   }
 
   /**
@@ -214,8 +214,8 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {Firebase DataSnapshot} locationDataSnapshot A snapshot of the data stored for this location.
    */
   function _childChangedCallback(locationDataSnapshot) {
-    var val = locationDataSnapshot.val();
-    _updateLocation(locationDataSnapshot.key(), decodeGeoFireObject(val), decodeGeoFireDataObject(val));
+    var val = locationDataSnapshot.val();    
+    _updateLocation(getKey(locationDataSnapshot), decodeGeoFireObject(val), decodeGeoFireDataObject(val));
   }
 
   /**
@@ -224,7 +224,7 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * @param {Firebase DataSnapshot} locationDataSnapshot A snapshot of the data stored for this location.
    */
   function _childRemovedCallback(locationDataSnapshot) {
-    var key = locationDataSnapshot.key();
+    var key = getKey(locationDataSnapshot);
     if (_locationsTracked.hasOwnProperty(key)) {
       _firebaseRef.child(key).once("value", function(snapshot) {
         var location = snapshot.val() === null ? null : decodeGeoFireObject(snapshot.val());
@@ -376,6 +376,12 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
     for (var i = 0; i < numKeys; ++i) {
       var key = keys[i];
 
+      // If the query was cancelled while going through this loop, stop updating locations and stop
+      // firing events
+      if (_cancelled === true) {
+        break;
+      }
+
       // Get the cached information for this location
       var locationDict = _locationsTracked[key];
 
@@ -479,6 +485,9 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
    * query via on() will be cancelled. This query can no longer be used in the future.
    */
   this.cancel = function () {
+    // Mark this query as cancelled
+    _cancelled = true;
+
     // Cancel all callbacks in this query's callback list
     _callbacks = {
       ready: [],
@@ -521,6 +530,9 @@ var GeoQuery = function (firebaseRef, queryCriteria) {
     key_exited: [],
     key_moved: []
   };
+
+  // Variable to track when the query is cancelled
+  var _cancelled = false;
 
   // Variables used to keep track of when to fire the "ready" event
   var _valueEventFired = false;
