@@ -12,11 +12,22 @@
 		"url": "https://github.com/mikepugh/geofire-js/issues"
 	},
 	"license": "MIT",
-	"keywords": [ "geoquery", "location", "firebase", "realtime", "geolocation" ],
+	"keywords": [
+		"geoquery",
+		"location",
+		"firebase",
+		"realtime",
+		"geolocation"
+	],
 	"main": "dist/index.cjs.js",
 	"module": "dist/index.esm.js",
 	"typings": "dist/index.d.ts",
-	"files": [ "dist/**", "LICENSE", "README.md", "package.json" ],
+	"files": [
+		"dist/**",
+		"LICENSE",
+		"README.md",
+		"package.json"
+	],
 	"peerDependencies": {
 		"firebase": "^2.4.0 || 3.x.x || 4.x.x || 5.x.x"
 	},
@@ -48,9 +59,16 @@
 		"prepare": "npm run build"
 	},
 	"nyc": {
-		"extension": [ ".ts" ],
-		"exclude": [ "**/*.d.ts", "**/*.js" ],
-		"reporter": [ "html" ],
+		"extension": [
+			".ts"
+		],
+		"exclude": [
+			"**/*.d.ts",
+			"**/*.js"
+		],
+		"reporter": [
+			"html"
+		],
 		"all": true
 	}
 }
