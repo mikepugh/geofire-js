@@ -420,6 +420,9 @@ function geohashQueries(center, radius) {
 function encodeGeoFireObject(location, geohash, data) {
     validateLocation(location);
     validateGeohash(geohash);
+    if (data === undefined) {
+        data = null;
+    }
     return { '.priority': geohash, g: geohash, l: location, d: data };
 }
 /**

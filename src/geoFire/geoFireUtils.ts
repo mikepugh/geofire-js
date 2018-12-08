@@ -408,6 +408,9 @@ export function geohashQueries(center: number[], radius: number): string[][] {
 export function encodeGeoFireObject(location: number[], geohash: string, data?: any): GeoFireObj {
 	validateLocation(location);
 	validateGeohash(geohash);
+	if (data === undefined) {
+		data = null;
+	}
 	return { '.priority': geohash, g: geohash, l: location, d: data };
 }
 
