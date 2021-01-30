@@ -1,7 +1,7 @@
 {
 	"name": "geofire",
 	"description": "Location-based querying and filtering using Firebase with data",
-	"version": "5.0.0",
+	"version": "5.0.1",
 	"author": "Firebase (https://firebase.google.com/)",
 	"homepage": "https://github.com/firebase/geofire-js/",
 	"repository": {
