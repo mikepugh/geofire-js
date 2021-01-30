@@ -1,6 +1,6 @@
 {
 	"name": "geofire",
-	"description": "Location-based querying and filtering using Firebase",
+	"description": "Location-based querying and filtering using Firebase with data",
 	"version": "4.1.4",
 	"author": "Firebase (https://firebase.google.com/)",
 	"homepage": "https://github.com/firebase/geofire-js/",
@@ -52,7 +52,6 @@
 		"tslint": "^6.1.3",
 		"typescript": "^4.1.3"
 	},
-
 	"nyc": {
 		"extension": [
 			".ts"
